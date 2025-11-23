@@ -4,6 +4,9 @@ import sys
 import pickle
 from utils import text_process
 
+import pickle
+
+
 
 def importPipelines():
     pipeline = pickle.load(open('text_clf_pipeline.pkl', 'rb'))

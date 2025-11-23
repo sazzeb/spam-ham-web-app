@@ -1,0 +1,16 @@
+Subject: Account notification: update your account information (Sample PHI-00019)
+
+This is a simulated phishing email example (#19) created only for security education and spam-filter research in 2024–2025. It is not a real message and must never be used to deceive anyone.
+
+In real communication, people may misuse phrases like “update your account information” to pressure, confuse, or mislead the reader. The text below mimics that style so detection systems can learn to recognize and filter it.
+
+Dear Customer,
+
+We are writing to show how a suspicious sign-in or account notice can look. A real scammer might include wording such as “update your account information”, pretend to be a trusted brand, and try to push you into clicking a link or sharing private data.
+
+For this training sample, everything here is fake and for practice only. Do not treat it as a real request and never send similar text to anyone.
+
+Training link (safe placeholder to a stock-photo site):
+[Open illustration](https://pixabay.com/photos/id-12345/?w=200)
+
+Reminder: this entire email is a controlled example for research and education. If you ever receive a similar real message, verify it through official channels and avoid clicking unexpected links or opening unknown attachments.

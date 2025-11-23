@@ -1,0 +1,16 @@
+Subject: Abuse-report sample containing phrase: knife attack (Sample HAR-00007)
+
+This is a simulated harmful email example (#7) created only for security education and spam-filter research in 2024–2025. It is not a real message and must never be used to deceive anyone.
+
+In real communication, people may misuse phrases like “knife attack” to pressure, confuse, or mislead the reader. The text below mimics that style so detection systems can learn to recognize and filter it.
+
+Important Safety Notice (Training Sample Only)
+
+The lines in this example show how threatening or hateful language can appear in a message. A genuine harmful email might include a phrase like “knife attack”. This is shown here so filters can learn to detect and report such content quickly.
+
+Any real message with this kind of language should be taken seriously and reported to the proper authorities and support channels.
+
+Training link (safe placeholder to a stock-photo site):
+[Open illustration](https://www.pexels.com/photo/12345/?w=200)
+
+Reminder: this entire email is a controlled example for research and education. If you ever receive a similar real message, verify it through official channels and avoid clicking unexpected links or opening unknown attachments.

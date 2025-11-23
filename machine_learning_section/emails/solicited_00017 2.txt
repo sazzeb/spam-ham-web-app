@@ -1,0 +1,14 @@
+Subject: Service message: shipping confirmation (Sample SOL-00017)
+
+This is a simulated solicited email example (#17) created only for security education and spam-filter research in 2024–2025. It is not a real message and must never be used to deceive anyone.
+
+In real communication, people may misuse phrases like “shipping confirmation” to pressure, confuse, or mislead the reader. The text below mimics that style so detection systems can learn to recognize and filter it.
+
+Dear Customer,
+
+This is an example of a normal, solicited service email. It may use a term such as “shipping confirmation” because the recipient started a purchase, booking, or support ticket. A legitimate notice explains the situation calmly and does not demand secret information or pressure you into rushed choices.
+
+Training link (safe placeholder to a stock-photo site):
+[Open illustration](https://unsplash.com/photos/security-training-example?w=200)
+
+Reminder: this entire email is a controlled example for research and education. If you ever receive a similar real message, verify it through official channels and avoid clicking unexpected links or opening unknown attachments.
