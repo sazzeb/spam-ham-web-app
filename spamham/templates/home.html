@@ -3,7 +3,7 @@
 
 {% block content %}
 
-    <br>
+    {% comment %} <br>
     <h1 style="color:white">SpamHam Spam Hammmm......</h1>
     <div class="jumbotron" style="padding-top: 10px">
         <h2>What is SpamHam, what does it do?</h2>
@@ -26,46 +26,102 @@
             </button>
             {% csrf_token %}
         </form>
-    </div>
+    </div> {% endcomment %}
 
-    <br><br>
-    <div id="scroll">
-        <p> Result-</p>
-        {% if result %}
-            {#    <script> gotoBottom("result") </script>#}
+    <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
 
+                <!-- Page header -->
+                <div class="text-center mb-4">
+                    <h1 class="h3 fw-bold">SpamHam Spam Hammmm</h1>
+                    <p class="text-muted mb-0">
+                    What is SpamHam, what does it do?
+                    </p>
+                </div>
 
-            <div class="jumbotron" style="padding-top: 10px" id="result">
-                <script>scrollDown();</script>
+                <!-- Error alert -->
+                {% if error %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ error }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
 
-                <div> You entered <br> "{{ message }}" <br></div>
-                <p>which is <strong style="font-size: larger">{{ result }}</strong>!</p> <br>
-                <p>Test accuracy: {{ accuracy }}%</p>
-                <p> Under the hood: Naive Bayes, with NLP(BOW, TF-IDF)</p>
+                <!-- Main card -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Single message area -->
+                        <div class="mb-3">
+                        <div><p>Unsolicited messages which we did not ask for from a source is what we call <b><a
+                            href="https://blog.barracuda.com/2013/10/03/ham-v-spam-whats-the-difference/">SPAM</a></b>.<br> Messages
+                        which are the desired ones and are not spam are known as <b><a
+                                href="https://blog.barracuda.com/2013/10/03/ham-v-spam-whats-the-difference/">HAM</a></b>.
+                        <br> Wait! Don't go away, I got an example of a spam. Yes the one below! <br> <em
+                                style="color:rebeccapurple">A [redacted] loan for Rs 100K is approved for you if you receive this
+                            SMS. 1 min verification & cash in 1 hr at www.[redacted].co.in to opt out reply stop</em></p>
+                        <p>This web app is powered with ML, NLP which identifies whether the message is a spam or not.</p>
+                        <p><b>Write or paste a message/email in the text box below to find out is it a spam or not?</b></p></div>
+                        <textarea
+                            id="message"
+                            name="message"
+                            class="form-control"
+                            rows="8"
+                            placeholder="Write here... eg; Hello, how are you? ..."
+                        >{{ message }}</textarea>
+                        <div class="form-text">
+                            Paste any suspicious email text here for a one-off prediction.
+                        </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-2 mb-4">
+                        <button type="submit" class="btn btn-danger btn-block btn-large">
+                            is it a Spam? Check me out!
+                        </button>
+                        </div>
+
+    
+                    </form>
+                    </div>
+                </div>
+
+                <!-- Single prediction result -->
+                {% if result %}
+                    <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        Accurate Predicted Result
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-1">
+                        <span class="fw-semibold">Prediction:</span>
+                        {{ result }}
+                        </p>
+                        <p class="mb-1">
+                        <span class="fw-semibold">Confidence:</span>
+                        {{ accuracy }}%
+                        </p>
+                        <p class="mb-1">
+                        <span class="fw-semibold">Length before cleaning:</span>
+                        {{ raw_length }} characters
+                        </p>
+                        <p class="mb-3">
+                        <span class="fw-semibold">Length after cleaning:</span>
+                        {{ clean_length }} characters
+                        </p>
+
+                        <div class="mt-3">
+                        <h6 class="fw-semibold">Original text:</h6>
+                        <pre class="bg-light p-3 rounded small mb-0">{{ message }}</pre>
+                        </div>
+                    </div>
+                    </div>
+                {% endif %}
+
+                </div>
             </div>
-            <script>scrollDown();</script>
-
-
-        {% else %}
-            <p></p>
-        {% endif %}
-
-        <div class="text-center container" style="color:whitesmoke">
-            <hr style="background: whitesmoke">
-            <h3> Made by <b> Aditya Kaushik</b> with <b>Love!</b></h3>
-            <h6>Code for all(webapp + ML algo) is available on my github(public); <a
-                    href="https://github.com/aditya98ak/spam-ham-web-app">aditya98ak/spam-ham-web-app</a></h6>
-            <p> For any queries reach out to me on.</p>
-            <div class="text-center list-group col-sm-4 container">
-                <a href="https://www.linkedin.com/in/adityakaushik01" class="list-group-item">LinkedIn</a>
-                <a href="https://twitter.com/aditya98ak" class="list-group-item">Twitter</a>
-                <a href="https://github.com/aditya98ak" class="list-group-item">GitHub</a>
-            </div>
-            {% if result %}
-                <script>scrollDown();</script>
-
-            {% endif %}
-        </div>
     </div>
 
     {#    <script>scrollDown();</script>#}
