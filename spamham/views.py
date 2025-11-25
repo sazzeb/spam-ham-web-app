@@ -20,6 +20,73 @@ from sklearn.naive_bayes import MultinomialNB
 from utils import text_process
 from manage import importPipelines
 
+
+
+def make_summary_chart(label_counts,
+                       acc_per_label,
+                       total_emails,
+                       avg_accuracy_all,
+                       avg_raw_length,
+                       avg_clean_length,
+                       file_size_kb):
+    """
+    Build one summary figure:
+      - top: class distribution (count per class)
+      - bottom: average accuracy per class
+      - left text: totals and averages (no model date)
+    """
+    labels = sorted(label_counts.keys())
+    counts = [label_counts[l] for l in labels]
+    mean_acc = [
+        sum(acc_per_label[l]) / len(acc_per_label[l]) if acc_per_label[l] else 0.0
+        for l in labels
+    ]
+
+    fig, axes = plt.subplots(2, 1, figsize=(8, 6), sharex=True)
+
+    axes[0].bar(labels, counts)
+    axes[0].set_ylabel("Number of emails")
+    axes[0].set_title("Class distribution")
+
+    axes[1].bar(labels, mean_acc)
+    axes[1].set_ylabel("Average accuracy (%)")
+    axes[1].set_xlabel("Class")
+    axes[1].set_ylim(0, 100)
+    axes[1].grid(axis="y", linestyle="--", alpha=0.4)
+
+    plt.xticks(rotation=45, ha="right")
+
+    text_lines = [
+        f"Total emails: {total_emails}",
+        f"File size: {file_size_kb:.1f} KB" if file_size_kb is not None else "File size: N/A",
+        f"Overall avg accuracy: {avg_accuracy_all:.1f}%",
+        f"Avg raw length: {avg_raw_length:.1f} chars",
+        f"Avg clean length: {avg_clean_length:.1f} chars",
+    ]
+    stats_text = "\n".join(text_lines)
+
+    fig.text(
+        0.02,
+        0.98,
+        stats_text,
+        ha="left",
+        va="top",
+        fontsize=9,
+        bbox=dict(facecolor="white", alpha=0.8, edgecolor="grey")
+    )
+
+    plt.tight_layout(rect=[0.18, 0.0, 1.0, 0.95])
+
+    buf = BytesIO()
+    fig.savefig(buf, format="png", dpi=120)
+    buf.seek(0)
+    img_base64 = base64.b64encode(buf.read()).decode("utf-8")
+    plt.close(fig)
+    return img_base64
+
+
+
+
 def make_bar_chart(labels, values, title, xlabel, ylabel):
     """
     Create a simple bar chart and return it as a base64 string.
@@ -151,6 +218,7 @@ def home(request):
     return render(request, 'home.html')
 
 def multiple_upload(request):
+    
     if request.method != "POST":
         return redirect("home")
 
@@ -169,52 +237,77 @@ def multiple_upload(request):
             texts = build_text_column(df)
             bulk_results = multiple_predict(texts)
 
-            # ---------- aggregate for charts ----------
+            # If no rows, just record that and skip chart
+            if not bulk_results:
+                all_file_results.append({
+                    "file_name": file_name,
+                    "results": [],
+                    "error": "No valid rows found in file.",
+                    "summary_chart": None,
+                    "summary_stats": None,
+                })
+                continue
+
+            # ---------- aggregate for summary ----------
             label_counts = Counter()
             acc_per_label = defaultdict(list)
+            total_accuracy = 0.0
+            total_raw_len = 0
+            total_clean_len = 0
 
             for row in bulk_results:
-                # result string is like "very likely phishing" or "less likely spam"
-                result_str = row["result"]
-                # take the last word as the raw label (phishing/spam/harmful/...)
+                result_str = row["result"]  # "very likely phishing"
                 raw_label = result_str.split()[-1].lower()
 
                 label_counts[raw_label] += 1
                 acc_per_label[raw_label].append(row["accuracy"])
 
+                total_accuracy += row["accuracy"]
+                total_raw_len += row["raw_length"]
+                total_clean_len += row["clean_length"]
+
+            total_emails = len(bulk_results)
+            avg_accuracy_all = total_accuracy / total_emails
+            avg_raw_length = total_raw_len / total_emails
+            avg_clean_length = total_clean_len / total_emails
+
+            file_size_kb = getattr(uploaded_file, "size", None)
+            if file_size_kb is not None:
+                file_size_kb = file_size_kb / 1024.0
+
+            # Compose one summary chart
+            summary_chart = make_summary_chart(
+                label_counts=label_counts,
+                acc_per_label=acc_per_label,
+                total_emails=total_emails,
+                avg_accuracy_all=avg_accuracy_all,
+                avg_raw_length=avg_raw_length,
+                avg_clean_length=avg_clean_length,
+                file_size_kb=file_size_kb,
+            )
+
+            # Also create a short text summary for display
             if label_counts:
-                ordered_labels = sorted(label_counts.keys())
-                counts = [label_counts[l] for l in ordered_labels]
-                mean_acc = [
-                    sum(acc_per_label[l]) / len(acc_per_label[l])
-                    for l in ordered_labels
-                ]
-
-                class_chart = make_bar_chart(
-                    ordered_labels,
-                    counts,
-                    title="Predicted class distribution",
-                    xlabel="Class",
-                    ylabel="Number of emails",
-                )
-
-                accuracy_chart = make_bar_chart(
-                    ordered_labels,
-                    mean_acc,
-                    title="Average confidence per class",
-                    xlabel="Class",
-                    ylabel="Accuracy (%)",
-                )
+                top_label, top_count = max(label_counts.items(), key=lambda kv: kv[1])
             else:
-                class_chart = None
-                accuracy_chart = None
+                top_label, top_count = "N/A", 0
+
+            summary_stats = {
+                "total_emails": total_emails,
+                "file_size_kb": file_size_kb,
+                "avg_accuracy_all": avg_accuracy_all,
+                "avg_raw_length": avg_raw_length,
+                "avg_clean_length": avg_clean_length,
+                "top_label": top_label,
+                "top_count": top_count,
+            }
 
             all_file_results.append({
                 "file_name": file_name,
                 "results": bulk_results,
                 "error": None,
-                "class_chart": class_chart,
-                "accuracy_chart": accuracy_chart,
+                "summary_chart": summary_chart,
+                "summary_stats": summary_stats,
             })
 
         except Exception as e:
@@ -222,8 +315,8 @@ def multiple_upload(request):
                 "file_name": file_name,
                 "results": [],
                 "error": str(e),
-                "class_chart": None,
-                "accuracy_chart": None,
+                "summary_chart": None,
+                "summary_stats": None,
             })
 
     return render(request, "multiple_upload.html", {
@@ -271,7 +364,7 @@ def multiple_predict(texts):
         raw_length = len(raw_text)
 
         tokens = text_process(raw_text)
-        cleaned = ' '.join(tokens)
+        cleaned = " ".join(tokens)
         clean_length = len(cleaned)
 
         result, accuracy = predict([cleaned])

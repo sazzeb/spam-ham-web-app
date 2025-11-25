@@ -72,31 +72,53 @@
                             {% endif %}
 
                             {% if file_block.results %}
-                            <!-- Charts: class distribution and average accuracy per class -->
-                            <div class="row mb-4">
-                                {% if file_block.class_chart %}
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="fw-semibold text-center">Class distribution</h6>
-                                    <img
-                                    src="data:image/png;base64,{{ file_block.class_chart }}"
-                                    alt="Class distribution"
+                            {% if file_block.summary_chart %}
+                                <div class="mb-3 text-center">
+                                <h6 class="fw-semibold mb-2">Overall upload summary</h6>
+                                <img
+                                    src="data:image/png;base64,{{ file_block.summary_chart }}"
+                                    alt="Upload summary chart"
                                     class="img-fluid border rounded"
-                                    >
+                                >
                                 </div>
-                                {% endif %}
-                                {% if file_block.accuracy_chart %}
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="fw-semibold text-center">Average accuracy per class</h6>
-                                    <img
-                                    src="data:image/png;base64,{{ file_block.accuracy_chart }}"
-                                    alt="Accuracy per class"
-                                    class="img-fluid border rounded"
-                                    >
-                                </div>
-                                {% endif %}
-                            </div>
+                            {% endif %}
 
-                            <!-- Table of detailed results -->
+                            {% if file_block.summary_stats %}
+                                <div class="mb-3">
+                                <p class="mb-1">
+                                    <strong>Total emails:</strong> {{ file_block.summary_stats.total_emails }}
+                                </p>
+                                <p class="mb-1">
+                                    <strong>File size:</strong>
+                                    {% if file_block.summary_stats.file_size_kb %}
+                                    {{ file_block.summary_stats.file_size_kb|floatformat:1 }} KB
+                                    {% else %}
+                                    N/A
+                                    {% endif %}
+                                </p>
+                                <p class="mb-1">
+                                    <strong>Overall avg accuracy:</strong>
+                                    {{ file_block.summary_stats.avg_accuracy_all|floatformat:1 }}%
+                                </p>
+                                <p class="mb-1">
+                                    <strong>Avg length before cleaning:</strong>
+                                    {{ file_block.summary_stats.avg_raw_length|floatformat:1 }} characters
+                                </p>
+                                <p class="mb-1">
+                                    <strong>Avg length after cleaning:</strong>
+                                    {{ file_block.summary_stats.avg_clean_length|floatformat:1 }} characters
+                                </p>
+                                <p class="mb-1">
+                                    <strong>Most common class:</strong>
+                                    {{ file_block.summary_stats.top_label }}
+                                    ({{ file_block.summary_stats.top_count }} emails)
+                                </p>
+                                
+                                </div>
+                            {% endif %}
+
+                            <hr>
+
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover mb-0 align-middle">
                                 <thead class="table-light">
@@ -130,6 +152,7 @@
                         </div>
                     {% endfor %}
                 {% endif %}
+
 
 
                 </div>
